@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/wundergraph/graphql-go-tools/v2/pkg/graphqlerrors"
 	"hash"
 	"io"
 	"net/http"
@@ -31,6 +32,7 @@ import (
 	"github.com/wundergraph/graphql-go-tools/v2/pkg/astprinter"
 	"github.com/wundergraph/graphql-go-tools/v2/pkg/astvalidation"
 	"github.com/wundergraph/graphql-go-tools/v2/pkg/middleware/operation_complexity"
+	"github.com/wundergraph/graphql-go-tools/v2/pkg/middleware/recursion_guard"
 	"github.com/wundergraph/graphql-go-tools/v2/pkg/operationreport"
 	"github.com/wundergraph/graphql-go-tools/v2/pkg/variablesvalidation"
 
@@ -1091,6 +1093,30 @@ func (o *OperationKit) ValidateQueryComplexity(complexityLimitConfig *config.Com
 			cacheResult.RootFields += 1
 		} else {
 			cacheResult.RootFieldAliases += 1
+		}
+	}
+
+	// Recursion Guard Integration
+	if complexityLimitConfig != nil && complexityLimitConfig.RecursionGuard != nil && complexityLimitConfig.RecursionGuard.Enabled {
+		if !(complexityLimitConfig.RecursionGuard.IgnorePersistedOperations && isPersisted) {
+			report := &operationreport.Report{}
+
+			if err := recursion_guard.ValidateRecursion(complexityLimitConfig.RecursionGuard.MaxDepth, operation, definition, report); err != nil {
+				return false, cacheResult, &httpGraphqlError{
+					message:    err.Error(),
+					statusCode: http.StatusBadRequest,
+				}
+			}
+
+			err := graphqlerrors.RequestErrorsFromOperationReport(*report)
+
+			if err != nil {
+				return false, cacheResult, &httpGraphqlError{
+					message:    "Recursion guard error: " + err.Error(),
+					statusCode: http.StatusBadRequest,
+				}
+			}
+
 		}
 	}
 

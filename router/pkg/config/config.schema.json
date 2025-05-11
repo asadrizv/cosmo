@@ -2266,6 +2266,29 @@
                   "default": false
                 }
               }
+            },
+            "recursion_guard": {
+              "type": "object",
+              "description": "The configuration for guarding against recursive type references in GraphQL operations.",
+              "additionalProperties": false,
+              "properties": {
+                "enabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Enable recursion depth checking. If true, operations will be checked for recursive type references."
+                },
+                "max_depth": {
+                  "type": "integer",
+                  "description": "Maximum allowed recursion depth for types in GraphQL operations.",
+                  "default": 3,
+                  "minimum": 1
+                },
+                "ignore_persisted_operations": {
+                  "type": "boolean",
+                  "description": "Disable recursion depth checking for persisted operations.",
+                  "default": false
+                }
+              }
             }
           }
         },
