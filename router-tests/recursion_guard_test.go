@@ -1,4 +1,3 @@
-// router-tests/recursion_guard_test.go
 package integration
 
 import (
