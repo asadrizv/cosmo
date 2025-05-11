@@ -108,7 +108,6 @@ func TestRecursionGuard(t *testing.T) {
 			}, func(t *testing.T, env *testenv.Environment) {
 				hash := "employees-recursion-hash"
 
-				// 1) register APQ
 				register := map[string]any{
 					"query": deepQuery,
 					"extensions": map[string]any{
@@ -124,7 +123,6 @@ func TestRecursionGuard(t *testing.T) {
 					strings.NewReader(string(b)),
 				)
 
-				// 2) request by hash only
 				op := map[string]any{
 					"extensions": map[string]any{
 						"persistedQuery": map[string]any{
