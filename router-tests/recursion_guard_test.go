@@ -12,8 +12,6 @@ import (
 	"github.com/wundergraph/cosmo/router/pkg/config"
 )
 
-/*──────────────────────── helpers ────────────────────────*/
-
 func guard(max int, ignoreAPQ bool) func(*config.SecurityConfiguration) {
 	return func(sc *config.SecurityConfiguration) {
 		if sc.ComplexityLimits == nil {
@@ -27,10 +25,6 @@ func guard(max int, ignoreAPQ bool) func(*config.SecurityConfiguration) {
 	}
 }
 
-/*──────────────────────── queries ────────────────────────*/
-
-// depth-2 (employees → hobbies → employees)
-// products is now just the enum list — no inline fragments
 const shallowQuery = `
 	query ShallowEmployees {
 		employees {
@@ -45,7 +39,6 @@ const shallowQuery = `
 		}
 	}`
 
-// depth-4 (employees → hobbies → employees → hobbies → employees)
 const deepQuery = `
 	query DeepEmployees {
 		employees {
@@ -72,12 +65,9 @@ const deepQuery = `
 		}
 	}`
 
-/*──────────────────────── tests ──────────────────────────*/
-
 func TestRecursionGuard(t *testing.T) {
 	t.Parallel()
 
-	// ── success ───────────────────────────────────────────
 	t.Run("query_with_valid_recursion_depth_should_succeed", func(t *testing.T) {
 		t.Parallel()
 
@@ -89,7 +79,6 @@ func TestRecursionGuard(t *testing.T) {
 		})
 	})
 
-	// ── failure ───────────────────────────────────────────
 	t.Run("query_with_excessive_recursive_depth_should_fail", func(t *testing.T) {
 		t.Parallel()
 
@@ -111,7 +100,6 @@ func TestRecursionGuard(t *testing.T) {
 		})
 	})
 
-	// ── APQ ignore flag ───────────────────────────────────
 	t.Run("persisted_operation_with_recursion_should_succeed_when_ignore_persisted_operations_is_true",
 		func(t *testing.T) {
 			t.Parallel()
