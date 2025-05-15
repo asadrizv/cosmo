@@ -24,10 +24,6 @@ func guard(max int, ignoreAPQ bool) func(*config.SecurityConfiguration) {
 	}
 }
 
-// ---------------------------------------------------------------------------
-// sample queries
-// ---------------------------------------------------------------------------
-
 const shallowQuery = `
 	query ShallowEmployees {
 		employees {
@@ -68,9 +64,6 @@ const deepQuery = `
 		}
 	}`
 
-// --- new: cycle vs. repeat-pair ------------------------------------------------
-
-// A benign *cycle*: Employee.products → Consultancy.lead (pair appears only once)
 const cycleQuery = `
 	query CycleOK {
 		employees {
@@ -84,7 +77,6 @@ const cycleQuery = `
 		}
 	}`
 
-// Same path but the inner lead goes back to Employee.products again → repeats pair
 const repeatPairQuery = `
 	query RepeatBad {
 		  employees {
@@ -101,14 +93,8 @@ const repeatPairQuery = `
 	}
 `
 
-// ---------------------------------------------------------------------------
-// tests
-// ---------------------------------------------------------------------------
-
 func TestRecursionGuard(t *testing.T) {
 	t.Parallel()
-
-	// --- basic depth checks --------------------------------------------------
 
 	t.Run("query_with_valid_recursion_depth_should_succeed", func(t *testing.T) {
 		t.Parallel()
@@ -141,8 +127,6 @@ func TestRecursionGuard(t *testing.T) {
 			require.Contains(t, strings.ToLower(msg), "recursion")
 		})
 	})
-
-	// --- APQ bypass ----------------------------------------------------------
 
 	t.Run("persisted_operation_with_recursion_should_succeed_when_ignore_persisted_operations_is_true",
 		func(t *testing.T) {
@@ -185,8 +169,6 @@ func TestRecursionGuard(t *testing.T) {
 				require.Equal(t, 200, res.StatusCode)
 			})
 		})
-
-	// --- NEW: cycle vs. repeat-pair -----------------------------------------
 
 	t.Run("cyclic_path_unique_pairs_should_succeed", func(t *testing.T) {
 		t.Parallel()
