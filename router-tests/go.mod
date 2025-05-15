@@ -194,4 +194,4 @@ replace (
 
 replace github.com/hashicorp/consul/sdk => github.com/wundergraph/consul/sdk v0.0.0-20250204115147-ed842a8fd301
 
-replace github.com/wundergraph/graphql-go-tools/v2 => github.com/asadrizv/graphql-go-tools/v2 v2.0.0-20250510012148-5abd9c6831b8
+replace github.com/wundergraph/graphql-go-tools/v2 => github.com/asadrizv/graphql-go-tools/v2 v2.0.0-20250515010507-ede4667f59a6

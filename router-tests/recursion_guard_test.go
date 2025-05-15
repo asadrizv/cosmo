@@ -24,11 +24,15 @@ func guard(max int, ignoreAPQ bool) func(*config.SecurityConfiguration) {
 	}
 }
 
+// ---------------------------------------------------------------------------
+// sample queries
+// ---------------------------------------------------------------------------
+
 const shallowQuery = `
 	query ShallowEmployees {
 		employees {
 			id
-			products           # enum values only
+			products
 			hobbies {
 				__typename
 				employees {      # depth 2
@@ -53,7 +57,7 @@ const deepQuery = `
 							id
 							hobbies {
 								__typename
-								employees {       # depth 4 -> should overflow when maxDepth = 3
+								employees {   # depth 4 -> overflow when maxDepth = 3
 									id
 								}
 							}
@@ -64,8 +68,47 @@ const deepQuery = `
 		}
 	}`
 
+// --- new: cycle vs. repeat-pair ------------------------------------------------
+
+// A benign *cycle*: Employee.products → Consultancy.lead (pair appears only once)
+const cycleQuery = `
+	query CycleOK {
+		employees {
+			products {
+				... on Consultancy {
+					lead {
+						id           # back to Employee but through a *different* pair
+					}
+				}
+			}
+		}
+	}`
+
+// Same path but the inner lead goes back to Employee.products again → repeats pair
+const repeatPairQuery = `
+	query RepeatBad {
+		  employees {
+			hobbies {                  # Employee → hobbies  (union)
+			  employees {              # Hobby.employees  (1st time)
+				hobbies {
+				  employees {          # Hobby.employees  (2nd time) → repeats pair
+					id
+				  }
+				}
+			  }
+			}
+		  }
+	}
+`
+
+// ---------------------------------------------------------------------------
+// tests
+// ---------------------------------------------------------------------------
+
 func TestRecursionGuard(t *testing.T) {
 	t.Parallel()
+
+	// --- basic depth checks --------------------------------------------------
 
 	t.Run("query_with_valid_recursion_depth_should_succeed", func(t *testing.T) {
 		t.Parallel()
@@ -98,6 +141,8 @@ func TestRecursionGuard(t *testing.T) {
 			require.Contains(t, strings.ToLower(msg), "recursion")
 		})
 	})
+
+	// --- APQ bypass ----------------------------------------------------------
 
 	t.Run("persisted_operation_with_recursion_should_succeed_when_ignore_persisted_operations_is_true",
 		func(t *testing.T) {
@@ -140,4 +185,38 @@ func TestRecursionGuard(t *testing.T) {
 				require.Equal(t, 200, res.StatusCode)
 			})
 		})
+
+	// --- NEW: cycle vs. repeat-pair -----------------------------------------
+
+	t.Run("cyclic_path_unique_pairs_should_succeed", func(t *testing.T) {
+		t.Parallel()
+
+		testenv.Run(t, &testenv.Config{
+			ModifySecurityConfiguration: guard(1, false), // very strict
+		}, func(t *testing.T, env *testenv.Environment) {
+			res := env.MakeGraphQLRequestOK(testenv.GraphQLRequest{Query: cycleQuery})
+			require.NotContains(t, strings.ToLower(res.Body), "recursion")
+		})
+	})
+
+	t.Run("repeated_pair_should_fail_at_depth_1", func(t *testing.T) {
+		t.Parallel()
+
+		testenv.Run(t, &testenv.Config{
+			ModifySecurityConfiguration: guard(1, false),
+		}, func(t *testing.T, env *testenv.Environment) {
+			out, err := env.MakeGraphQLRequest(testenv.GraphQLRequest{Query: repeatPairQuery})
+			require.NoError(t, err)
+			require.Equal(t, 400, out.Response.StatusCode)
+
+			var body map[string]any
+			require.NoError(t, json.Unmarshal([]byte(out.Body), &body))
+
+			errs, ok := body["errors"].([]any)
+			require.True(t, ok && len(errs) > 0, "router returned no GraphQL errors")
+
+			msg, _ := errs[0].(map[string]any)["message"].(string)
+			require.Contains(t, strings.ToLower(msg), "recursion")
+		})
+	})
 }

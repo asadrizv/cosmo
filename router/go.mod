@@ -165,4 +165,4 @@ require (
 // Remember you can use Go workspaces to avoid using replace directives in multiple go.mod files
 // Use what is best for your personal workflow. See CONTRIBUTING.md for more information
 
-replace github.com/wundergraph/graphql-go-tools/v2 => github.com/asadrizv/graphql-go-tools/v2 v2.0.0-20250510012148-5abd9c6831b8
+replace github.com/wundergraph/graphql-go-tools/v2 => github.com/asadrizv/graphql-go-tools/v2 v2.0.0-20250515010507-ede4667f59a6

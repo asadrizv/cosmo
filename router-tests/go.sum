@@ -40,8 +40,8 @@ github.com/andybalholm/cascadia v1.3.2 h1:3Xi6Dw5lHF15JtdcmAHD3i1+T8plmv7BQ/nsVi
 github.com/andybalholm/cascadia v1.3.2/go.mod h1:7gtRlve5FxPPgIgX36uWBX58OdBsSS6lUvCFb+h7KvU=
 github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0 h1:jfIu9sQUG6Ig+0+Ap1h4unLjW6YQJpKZVmUzxsD4E/Q=
 github.com/arbovm/levenshtein v0.0.0-20160628152529-48b4e1c0c4d0/go.mod h1:t2tdKJDJF9BV14lnkjHmOQgcvEKgtqs5a1N3LNdJhGE=
-github.com/asadrizv/graphql-go-tools/v2 v2.0.0-20250510012148-5abd9c6831b8 h1:V527+yAHRsvt/hstnt/4Bj2Q96o7VmOxcLfXAuzmgPg=
-github.com/asadrizv/graphql-go-tools/v2 v2.0.0-20250510012148-5abd9c6831b8/go.mod h1:B7eV0Qh8Lop9QzIOQcsvKp3S0ejfC6mgyWoJnI917yQ=
+github.com/asadrizv/graphql-go-tools/v2 v2.0.0-20250515010507-ede4667f59a6 h1:0VcDXT/rnjuRP0yAOJX4/iYMYiM/45WQthtA7ixvO7o=
+github.com/asadrizv/graphql-go-tools/v2 v2.0.0-20250515010507-ede4667f59a6/go.mod h1:B7eV0Qh8Lop9QzIOQcsvKp3S0ejfC6mgyWoJnI917yQ=
 github.com/benbjohnson/clock v1.3.0 h1:ip6w0uFQkncKQ979AypyG0ER7mqUSBdKLOgAle/AT8A=
 github.com/benbjohnson/clock v1.3.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
 github.com/beorn7/perks v1.0.1 h1:VlbKKnNfV8bJzeqoa4cOKqO6bYr3WgKZxO8Z16+hsOM=
