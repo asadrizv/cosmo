@@ -392,11 +392,18 @@ type ComplexityCalculationCache struct {
 	CacheSize int64 `yaml:"size,omitempty" envDefault:"1024" env:"SECURITY_COMPLEXITY_CACHE_SIZE"`
 }
 
+type RecursionGuardConfig struct {
+	Enabled                   bool `yaml:"enabled" envDefault:"true"`
+	MaxDepth                  int  `yaml:"max_depth" envDefault:"3"`
+	IgnorePersistedOperations bool `yaml:"ignore_persisted_operations" envDefault:"false"`
+}
+
 type ComplexityLimits struct {
-	Depth            *ComplexityLimit `yaml:"depth"`
-	TotalFields      *ComplexityLimit `yaml:"total_fields"`
-	RootFields       *ComplexityLimit `yaml:"root_fields"`
-	RootFieldAliases *ComplexityLimit `yaml:"root_field_aliases"`
+	Depth            *ComplexityLimit      `yaml:"depth"`
+	TotalFields      *ComplexityLimit      `yaml:"total_fields"`
+	RootFields       *ComplexityLimit      `yaml:"root_fields"`
+	RootFieldAliases *ComplexityLimit      `yaml:"root_field_aliases"`
+	RecursionGuard   *RecursionGuardConfig `yaml:"recursion_guard"`
 }
 
 type ComplexityLimit struct {
